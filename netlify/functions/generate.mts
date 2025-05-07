@@ -20,6 +20,8 @@ export default async (req: Request, context: Context) => {
   }
 
   const { access_token } = await authResponse.json();
+  console.log(await authResponse.json());
+  console.log(access_token);
 
   const response = await fetch("https://api.spotify.com/v1/me", {
     headers: {
