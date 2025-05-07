@@ -17,6 +17,7 @@ export default async (req: Request, context: Context) => {
   const clientSecret = Netlify.env.get("SPOTIFY_CLIENT_SECRET");
 
   const authResponse = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
     headers: {
       Authorization: "Basic " + (Buffer.from(clientId + ':' + clientSecret).toString('base64')),
       "Content-Type": "application/x-www-form-urlencoded"
