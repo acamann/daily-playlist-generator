@@ -33,8 +33,9 @@ export default async (req: Request, context: Context) => {
     return new Response("Unable to get Spotify token: " + authResponse.body, { status: authResponse.status });
   }
 
-  const { access_token } = await authResponse.json();
-  console.log(await authResponse.json());
+  const body = await authResponse.json();
+  console.log(body);
+  const { access_token } = body;
   console.log(access_token);
 
   return new Response(JSON.stringify({
