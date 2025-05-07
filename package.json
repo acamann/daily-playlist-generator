@@ -1,0 +1,16 @@
+{
+  "name": "daily-playlist-generator",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andy Camann",
+  "license": "MIT",
+  "description": "Interacts with Spotify API to cultivate a daily playlist for drive time by dynamically selecting items from other playlists and podcasts",
+  "dependencies": {
+    "@netlify/functions": "^3.1.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
