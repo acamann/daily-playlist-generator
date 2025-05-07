@@ -27,5 +27,5 @@ export default async (req: Request, context: Context) => {
     }
   });
 
-  return new Response(await response.json());
+  return new Response(JSON.stringify(await response.json()));
 }
