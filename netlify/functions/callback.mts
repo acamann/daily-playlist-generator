@@ -34,19 +34,17 @@ export default async (req: Request, context: Context) => {
   }
 
   const body = await authResponse.json();
-  console.log(body);
-  const { access_token } = body;
-  console.log(access_token);
+  const { access_token, refresh_token } = body;
+  
+  Netlify.env.set("ANDY_SPOTIFY_REFRESH_TOKEN", refresh_token);
 
-  return new Response(JSON.stringify({
-    access_token,
-  }),
-  {
-      headers: {
-        'Cache-Control': 'max-age=86400, public',
-        'Content-Type': 'application/json'
-      }
-  });
+  return new Response("Done updating Refresh Token");
+  // {
+  //     headers: {
+  //       'Cache-Control': 'max-age=86400, public',
+  //       'Content-Type': 'application/json'
+  //     }
+  // }
 }
 
 function isValidState(state: string) {
