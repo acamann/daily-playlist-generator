@@ -1,10 +1,16 @@
 import type { Context } from "@netlify/functions";
 
 export default async (req: Request, context: Context) => {
-  const { code, state } = context.params;
+  const query = new URL(req.url).searchParams;
+  const code = query.get("code");
+  const state = query.get("state");
 
-  if (!isValidState(state)) {
-    return new Response("Wrong Auth State", { status: 401 });
+  if (!state || !isValidState(state)) {
+    return new Response("Invalid State", { status: 401 });
+  }
+
+  if (!code) {
+    return new Response("Missing Authorization Code", { status: 401 });
   }
 
   const clientId = Netlify.env.get("SPOTIFY_CLIENT_ID");
@@ -42,5 +48,5 @@ export default async (req: Request, context: Context) => {
 }
 
 function isValidState(state: string) {
-  return state == "Jw14cXrREPOse6U6";
+  return state === "Jw14cXrREPOse6U6";
 }
