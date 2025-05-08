@@ -2,7 +2,7 @@ import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
 
 const SPURGEON_PODCAST_ID = "3K7ozH48m7PKoRTkJ4Cdc0";
-const WILDER_WOODS_MIX_PLAYLIST_ID = "37i9dQZF1EIWwhSWwHF4t0";
+const INSTRUMENTAL_PLAYLIST_ID = "5mgpMDPflYQRXU7XgYsRMe";
 
 const DAILY_COMMUTE_MORNING_PLAYLIST_ID = "2izrV7kDCebemseu3qeo3x";
 
@@ -15,8 +15,9 @@ export default async (req: Request, context: Context) => {
 
   // construct playlist
   const playlistUris: string[] = [];
+  playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
   playlistUris.push(await getLatestPodcastEpisodeUri(SPURGEON_PODCAST_ID, accessToken));
-  playlistUris.push(await getRandomPlaylistTrackUri(WILDER_WOODS_MIX_PLAYLIST_ID, accessToken));
+  playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
   
   // modify playlist by ID to replace with the above playlist
   const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${DAILY_COMMUTE_MORNING_PLAYLIST_ID}/tracks`, {
