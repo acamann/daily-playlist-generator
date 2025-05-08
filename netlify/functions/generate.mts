@@ -88,5 +88,5 @@ async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string
   const tracksBody = await playlistTracksResponse.json();
   console.log(tracksBody);
   const randomIndex = Math.floor(Math.random() * tracksBody.total)
-  return tracksBody.items[randomIndex].uri;
+  return tracksBody.items[randomIndex].track.uri;
 }
