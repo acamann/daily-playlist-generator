@@ -3,8 +3,16 @@ import type { Context } from "@netlify/functions";
 
 const SPURGEON_PODCAST_ID = "3K7ozH48m7PKoRTkJ4Cdc0";
 const INSTRUMENTAL_PLAYLIST_ID = "5mgpMDPflYQRXU7XgYsRMe";
+const SYNESTHESIA_ALBUM_ID = "4D7S7xyJToJ28MVcSH3YFo";
 
 const DAILY_COMMUTE_MORNING_PLAYLIST_ID = "2izrV7kDCebemseu3qeo3x";
+
+const ONE_DAY = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+const NOW = new Date();
+const TODAY = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()).getTime();
+const PLAYLIST_BIRTHDAY = new Date(2025, 5, 8).getTime();
+
+const PLAYLIST_ITERATION = Math.round(Math.abs((TODAY - PLAYLIST_BIRTHDAY) / ONE_DAY));
 
 export default async (req: Request, context: Context) => {
   const accessToken = await refreshToken();
@@ -15,7 +23,7 @@ export default async (req: Request, context: Context) => {
 
   // construct playlist
   const playlistUris: string[] = [];
-  playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
+  playlistUris.push(await getIterativeAlbumTrackUri(SYNESTHESIA_ALBUM_ID, accessToken));
   playlistUris.push(await getLatestPodcastEpisodeUri(SPURGEON_PODCAST_ID, accessToken));
   playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
   
@@ -76,7 +84,9 @@ async function getLatestPodcastEpisodeUri(podcastId: string, accessToken: string
     }
   });
   const episodesBody = await episodesResponse.json();
-  return episodesBody.items[0].uri;
+  const episodeUri = episodesBody.items[0].uri;
+  console.log(`Podcast ${podcastId} :: Latest :: Episode URI ${episodeUri}`);
+  return episodeUri;
 }
 
 async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string): Promise<string> {
@@ -87,5 +97,21 @@ async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string
   });
   const tracksBody = await playlistTracksResponse.json();
   const randomIndex = Math.floor(Math.random() * tracksBody.items.length);
-  return tracksBody.items[randomIndex].track.uri;
+  const trackUri = tracksBody.items[randomIndex].track.uri;
+  console.log(`Playlist ${playlistId} :: Playlist Length ${tracksBody.items.length} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
+  return trackUri;
+}
+
+async function getIterativeAlbumTrackUri(albumId: string, accessToken: string): Promise<string> {
+  const albumTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${albumId}/tracks?limit=50`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+  const tracksBody = await albumTracksResponse.json();
+  const tracksLength = tracksBody.items.length;
+  const iterativeIndex = tracksLength % PLAYLIST_ITERATION;
+  const trackUri = tracksBody.items[iterativeIndex].track.uri;
+  console.log(`Album ${albumId} :: Album Length ${tracksLength} :: Iteration ${PLAYLIST_ITERATION} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
+  return trackUri;
 }
