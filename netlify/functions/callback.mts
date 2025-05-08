@@ -6,7 +6,7 @@ export default async (req: Request, context: Context) => {
   const code = query.get("code");
   const state = query.get("state");
 
-  if (!state || !isValidState(state)) {
+  if (!state || !(await isValidState(state))) {
     return new Response("Invalid State", { status: 401 });
   }
 
@@ -43,6 +43,8 @@ export default async (req: Request, context: Context) => {
   return new Response("Done updating Refresh Token");
 }
 
-function isValidState(state: string) {
-  return state === "Jw14cXrREPOse6U6";
+async function isValidState(state: string) {
+  const store = getStore("spotify-auth");
+  const storedState = await store.get("state");
+  return state === storedState;
 }
