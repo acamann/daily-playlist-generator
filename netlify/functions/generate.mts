@@ -10,7 +10,7 @@ const DAILY_COMMUTE_MORNING_PLAYLIST_ID = "2izrV7kDCebemseu3qeo3x";
 const ONE_DAY = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
 const NOW = new Date();
 const TODAY = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()).getTime();
-const PLAYLIST_BIRTHDAY = new Date(2025, 5, 8).getTime();
+const PLAYLIST_BIRTHDAY = new Date(2025, 4, 8).getTime(); // 5/8/25
 
 const PLAYLIST_ITERATION = Math.round(Math.abs((TODAY - PLAYLIST_BIRTHDAY) / ONE_DAY));
 
@@ -112,7 +112,6 @@ async function getIterativeAlbumTrackUri(albumId: string, accessToken: string): 
     }
   });
   const tracksBody = await albumTracksResponse.json();
-  console.log(tracksBody, PLAYLIST_ITERATION);
   // TODO: validate response for sane error handling
   const tracksLength = tracksBody.items.length;
   const iterativeIndex = PLAYLIST_ITERATION % tracksLength;
