@@ -1,8 +1,11 @@
+import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
 
 export default async (req: Request, context: Context) => {
   const clientId = Netlify.env.get("SPOTIFY_CLIENT_ID");
-  const refreshToken = Netlify.env.get("ANDY_SPOTIFY_REFRESH_TOKEN");
+
+  const store = getStore("spotify-auth");
+  const refreshToken = await store.get("refresh_token");
 
   if (!refreshToken || !clientId) {
     return new Response("Unable to Refresh Token", { status: 401 });

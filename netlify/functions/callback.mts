@@ -1,3 +1,4 @@
+import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
 
 export default async (req: Request, context: Context) => {
@@ -36,15 +37,10 @@ export default async (req: Request, context: Context) => {
   const body = await authResponse.json();
   const { access_token, refresh_token } = body;
   
-  Netlify.env.set("ANDY_SPOTIFY_REFRESH_TOKEN", refresh_token);
+  const store = getStore("spotify-auth");
+  await store.set("refresh_token", refresh_token);
 
   return new Response("Done updating Refresh Token");
-  // {
-  //     headers: {
-  //       'Cache-Control': 'max-age=86400, public',
-  //       'Content-Type': 'application/json'
-  //     }
-  // }
 }
 
 function isValidState(state: string) {
