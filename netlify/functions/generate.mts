@@ -86,6 +86,7 @@ async function getRandomPlaylistTrackId(playlistId: string, accessToken: string)
     }
   });
   const tracksBody = await playlistTracksResponse.json();
+  console.log(tracksBody);
   const randomIndex = Math.floor(Math.random() * tracksBody.total)
   const randomTrackId = tracksBody.items[randomIndex].id;
   return randomTrackId;
