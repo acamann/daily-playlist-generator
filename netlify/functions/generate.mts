@@ -112,10 +112,10 @@ async function getIterativeAlbumTrackUri(albumId: string, accessToken: string): 
     }
   });
   const tracksBody = await albumTracksResponse.json();
-  console.log(tracksBody);
+  console.log(tracksBody, PLAYLIST_ITERATION);
   // TODO: validate response for sane error handling
   const tracksLength = tracksBody.items.length;
-  const iterativeIndex = tracksLength % PLAYLIST_ITERATION;
+  const iterativeIndex = PLAYLIST_ITERATION % tracksLength;
   const trackUri = tracksBody.items[iterativeIndex].uri;
   console.log(`Album ${albumId} :: Album Length ${tracksLength} :: Iteration ${PLAYLIST_ITERATION} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
   return trackUri;
