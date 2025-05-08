@@ -16,7 +16,7 @@ export default async (req: Request, context: Context) => {
   const queryParams = new URLSearchParams({
     response_type: "code",
     client_id: clientId,
-    scope: "user-read-playback-position playlist-modify-public",
+    scope: "user-read-playback-position playlist-modify-public playlist-read-private",
     redirect_uri: "https://andy-spotify-generator.netlify.app/.netlify/functions/callback",
     state
   });
