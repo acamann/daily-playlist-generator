@@ -26,9 +26,10 @@ export default async (req: Request, context: Context) => {
   }
   const body = await fetch(url, payload);
   const response = await body.json();
+  console.log(response);
 
   if (response.refresh_token) {
-    Netlify.env.set("ANDY_SPOTIFY_REFRESH_TOKEN", response.refresh_token);
+    await store.set("refresh_token", response.refresh_token);
   }
 
   const profile = await fetch("https://api.spotify.com/v1/me", {
