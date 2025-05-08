@@ -30,7 +30,7 @@ export default async (req: Request, context: Context) => {
     })
   });
 
-  return updateMorningPlaylistResponse;
+  return new Response(JSON.stringify(await updateMorningPlaylistResponse.json()));
 }
 
 async function refreshToken(): Promise<string | null> {  
