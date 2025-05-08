@@ -69,6 +69,7 @@ async function refreshToken(): Promise<string | null> {
   }
   const body = await fetch(url, payload);
   const response = await body.json();
+  // TODO: validate response for sane error handling
 
   if (response.refresh_token) {
     await store.set("refresh_token", response.refresh_token);
@@ -84,6 +85,7 @@ async function getLatestPodcastEpisodeUri(podcastId: string, accessToken: string
     }
   });
   const episodesBody = await episodesResponse.json();
+  // TODO: validate response for sane error handling
   const episodeUri = episodesBody.items[0].uri;
   console.log(`Podcast ${podcastId} :: Latest :: Episode URI ${episodeUri}`);
   return episodeUri;
@@ -96,6 +98,7 @@ async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string
     }
   });
   const tracksBody = await playlistTracksResponse.json();
+  // TODO: validate response for sane error handling
   const randomIndex = Math.floor(Math.random() * tracksBody.items.length);
   const trackUri = tracksBody.items[randomIndex].track.uri;
   console.log(`Playlist ${playlistId} :: Playlist Length ${tracksBody.items.length} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
@@ -103,13 +106,13 @@ async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string
 }
 
 async function getIterativeAlbumTrackUri(albumId: string, accessToken: string): Promise<string> {
-  const albumTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${albumId}/tracks?limit=50`, {
+  const albumTracksResponse = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks?limit=50`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   });
   const tracksBody = await albumTracksResponse.json();
-  console.log(tracksBody);
+  // TODO: validate response for sane error handling
   const tracksLength = tracksBody.items.length;
   const iterativeIndex = tracksLength % PLAYLIST_ITERATION;
   const trackUri = tracksBody.items[iterativeIndex].uri;
