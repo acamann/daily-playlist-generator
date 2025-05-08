@@ -3,6 +3,7 @@ import type { Context } from "@netlify/functions";
 
 export default async (req: Request, context: Context) => {
   const clientId = Netlify.env.get("SPOTIFY_CLIENT_ID");
+  const clientSecret = Netlify.env.get("SPOTIFY_CLIENT_SECRET");
 
   const store = getStore("spotify-auth");
   const refreshToken = await store.get("refresh_token");
@@ -16,6 +17,7 @@ export default async (req: Request, context: Context) => {
   const payload = {
     method: 'POST',
     headers: {
+      Authorization: "Basic " + (Buffer.from(clientId + ':' + clientSecret).toString('base64')),
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     body: new URLSearchParams({
