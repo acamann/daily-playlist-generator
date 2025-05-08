@@ -112,6 +112,7 @@ async function getIterativeAlbumTrackUri(albumId: string, accessToken: string): 
     }
   });
   const tracksBody = await albumTracksResponse.json();
+  console.log(tracksBody);
   // TODO: validate response for sane error handling
   const tracksLength = tracksBody.items.length;
   const iterativeIndex = tracksLength % PLAYLIST_ITERATION;
