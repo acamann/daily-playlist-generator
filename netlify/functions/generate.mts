@@ -15,8 +15,8 @@ export default async (req: Request, context: Context) => {
 
   // construct playlist
   const playlistUris: string[] = [];
-  playlistUris.push(await getLatestPodcastEpisodeId(SPURGEON_PODCAST_ID, accessToken));
-  playlistUris.push(await getRandomPlaylistTrackId(WILDER_WOODS_MIX_PLAYLIST_ID, accessToken));
+  playlistUris.push(await getLatestPodcastEpisodeUri(SPURGEON_PODCAST_ID, accessToken));
+  playlistUris.push(await getRandomPlaylistTrackUri(WILDER_WOODS_MIX_PLAYLIST_ID, accessToken));
   
   // modify playlist by ID to replace with the above playlist
   const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${DAILY_COMMUTE_MORNING_PLAYLIST_ID}/tracks`, {
@@ -68,18 +68,17 @@ async function refreshToken(): Promise<string | null> {
   return response.access_token;
 }
 
-async function getLatestPodcastEpisodeId(podcastId: string, accessToken: string): Promise<string> {
+async function getLatestPodcastEpisodeUri(podcastId: string, accessToken: string): Promise<string> {
   const episodesResponse = await fetch(`https://api.spotify.com/v1/shows/${podcastId}/episodes?limit=1`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   });
   const episodesBody = await episodesResponse.json();
-  const latestEpisodeId = episodesBody.items[0].id;
-  return latestEpisodeId;
+  return episodesBody.items[0].uri;
 }
 
-async function getRandomPlaylistTrackId(playlistId: string, accessToken: string): Promise<string> {
+async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string): Promise<string> {
   const playlistTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -88,6 +87,5 @@ async function getRandomPlaylistTrackId(playlistId: string, accessToken: string)
   const tracksBody = await playlistTracksResponse.json();
   console.log(tracksBody);
   const randomIndex = Math.floor(Math.random() * tracksBody.total)
-  const randomTrackId = tracksBody.items[randomIndex].id;
-  return randomTrackId;
+  return tracksBody.items[randomIndex].uri;
 }
