@@ -20,21 +20,22 @@ declare global {
   }
 }
 
-export default async (req: Request, context: Context) => {
-  (function() {
-    let logMessages: string[] = [];
-    const originalConsoleLog = console.log;
-  
-    console.log = function(message) {
-      logMessages.push(`${new Date()}: ${message}`);
-      originalConsoleLog(message);
-    };
-  
-    window.getLogs = function() {
-        return logMessages;
-    };
-  })();
+function setupLogging() {
+  let logMessages: string[] = [];
+  const originalConsoleLog = console.log;
 
+  console.log = function(message) {
+    logMessages.push(`${new Date()}: ${message}`);
+    originalConsoleLog(message);
+  };
+
+  return () => {
+      return logMessages;
+  };
+};
+
+export default async (req: Request, context: Context) => {
+  const getLogs = setupLogging();
   const accessToken = await refreshToken();
 
   if (!accessToken) {
@@ -59,7 +60,7 @@ export default async (req: Request, context: Context) => {
     })
   });
 
-  return new Response(JSON.stringify(window.getLogs()));
+  return new Response(JSON.stringify(getLogs()));
 }
 
 async function refreshToken(): Promise<string | null> {  
