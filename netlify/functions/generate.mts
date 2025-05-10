@@ -14,7 +14,27 @@ const PLAYLIST_BIRTHDAY = new Date(2025, 4, 8).getTime(); // 5/8/25
 
 const PLAYLIST_ITERATION = Math.round(Math.abs((TODAY - PLAYLIST_BIRTHDAY) / ONE_DAY));
 
+declare global {
+  interface Window {
+    getLogs: () => string[];
+  }
+}
+
 export default async (req: Request, context: Context) => {
+  (function() {
+    let logMessages: string[] = [];
+    const originalConsoleLog = console.log;
+  
+    console.log = function(message) {
+      logMessages.push(`${new Date()}: ${message}`);
+      originalConsoleLog(message);
+    };
+  
+    window.getLogs = function() {
+        return logMessages;
+    };
+  })();
+
   const accessToken = await refreshToken();
 
   if (!accessToken) {
@@ -39,7 +59,7 @@ export default async (req: Request, context: Context) => {
     })
   });
 
-  return new Response(JSON.stringify(await updateMorningPlaylistResponse.json()));
+  return new Response(JSON.stringify(window.getLogs()));
 }
 
 async function refreshToken(): Promise<string | null> {  
