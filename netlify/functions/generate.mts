@@ -70,11 +70,11 @@ async function refreshToken(): Promise<string | null> {
   console.log("Refreshing Token");
   const body = await fetch(url, payload);
   const response = await body.json();
-  console.log(response);
 
   if (response.refresh_token) {
+    // This is not included in every token response.  Perhaps never.  Perhaps only near expiration?
     await store.set("refresh_token", response.refresh_token);
-    console.log("Token Refreshed, new refresh token stored");
+    console.log("New refresh token stored");
   }
 
   return response.access_token;
