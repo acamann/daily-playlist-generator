@@ -70,6 +70,7 @@ async function refreshToken(): Promise<string | null> {
   console.log("Refreshing Token");
   const body = await fetch(url, payload);
   const response = await body.json();
+  console.log(response);
 
   if (response.refresh_token) {
     await store.set("refresh_token", response.refresh_token);
