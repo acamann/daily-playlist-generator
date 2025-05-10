@@ -67,12 +67,13 @@ async function refreshToken(): Promise<string | null> {
       client_id: clientId
     }),
   }
+  console.log("Refreshing Token");
   const body = await fetch(url, payload);
   const response = await body.json();
-  // TODO: validate response for sane error handling
 
   if (response.refresh_token) {
     await store.set("refresh_token", response.refresh_token);
+    console.log("Token Refreshed, new refresh token stored");
   }
 
   return response.access_token;
@@ -97,11 +98,24 @@ async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string
       Authorization: `Bearer ${accessToken}`
     }
   });
-  const tracksBody = await playlistTracksResponse.json();
-  // TODO: validate response for sane error handling
-  const randomIndex = Math.floor(Math.random() * tracksBody.items.length);
-  const trackUri = tracksBody.items[randomIndex].track.uri;
-  console.log(`Playlist ${playlistId} :: Playlist Length ${tracksBody.items.length} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
+  let tracksBody = await playlistTracksResponse.json();
+  const totalTracks = tracksBody.total;
+  const responseTracksLength = tracksBody.items.length;
+  const randomIndex = Math.floor(Math.random() * totalTracks);
+  let itemIndex = randomIndex;
+  if (randomIndex >= responseTracksLength) {
+    // the current iteration is beyond the first page, need to get it individually
+    console.log("Need to fetch playlist tracks at offset");
+    const playlistTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=1&offset=${randomIndex}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    tracksBody = await playlistTracksResponse.json();
+    itemIndex = 0;
+  }
+  const trackUri = tracksBody.items[itemIndex].track.uri;
+  console.log(`Playlist ${playlistId} :: Playlist Length ${totalTracks} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
   return trackUri;
 }
 
@@ -112,10 +126,23 @@ async function getIterativeAlbumTrackUri(albumId: string, accessToken: string): 
     }
   });
   const tracksBody = await albumTracksResponse.json();
-  // TODO: validate response for sane error handling
+  const totalTracks = tracksBody.total;
   const tracksLength = tracksBody.items.length;
-  const iterativeIndex = PLAYLIST_ITERATION % tracksLength;
+  const iterativeIndex = PLAYLIST_ITERATION % totalTracks;
+  if (iterativeIndex >= tracksLength) {
+    // the current iteration is beyond the first page, need to get it individually
+    console.log("Need to fetch album tracks at offset");
+    const albumTracksResponse = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks?limit=1&offset=${iterativeIndex}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    const tracksBody = await albumTracksResponse.json();
+    const trackUri = tracksBody.items[0].uri;
+    console.log(`Album ${albumId} :: Album Length ${totalTracks} :: Iteration ${PLAYLIST_ITERATION} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
+    return trackUri;    
+  }
   const trackUri = tracksBody.items[iterativeIndex].uri;
-  console.log(`Album ${albumId} :: Album Length ${tracksLength} :: Iteration ${PLAYLIST_ITERATION} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
+  console.log(`Album ${albumId} :: Album Length ${totalTracks} :: Iteration ${PLAYLIST_ITERATION} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
   return trackUri;
 }
