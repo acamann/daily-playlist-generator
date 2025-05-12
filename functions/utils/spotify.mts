@@ -19,19 +19,11 @@ export async function getLatestPodcastEpisodeUri(podcastId: string, accessToken:
 }
 
 export async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string): Promise<string> {
-  let tracks = await spotifyGetRequest<GetPlaylistTracksResponse>(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`, accessToken);
-  const totalTracks = tracks.total;
-  const responseTracksLength = tracks.items.length;
-  const randomIndex = Math.floor(Math.random() * totalTracks);
-  let itemIndex = randomIndex;
-  if (randomIndex >= responseTracksLength) {
-    // the current iteration is beyond the first page, need to get it individually
-    console.log("Need to fetch playlist tracks at offset");
-    tracks = await spotifyGetRequest<GetPlaylistTracksResponse>(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=1&offset=${randomIndex}`, accessToken);
-    itemIndex = 0;
-  }
-  const trackUri = tracks.items[itemIndex].track.uri;
-  console.log(`Fetching Playlist ${playlistId} :: Playlist Length ${totalTracks} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
+  const trackCount = await spotifyGetRequest<GetPlaylistTracksResponse>(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=1&fields=total`, accessToken);
+  const randomIndex = Math.floor(Math.random() * trackCount.total);
+  const tracks = await spotifyGetRequest<GetPlaylistTracksResponse>(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=1&offset=${randomIndex}&fields=items(track(uri))`, accessToken);
+  const trackUri = tracks.items[0].track.uri;
+  console.log(`Fetching Playlist ${playlistId} :: Playlist Length ${trackCount.total} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
   return trackUri;
 }
 
