@@ -4,39 +4,27 @@ import { setupLogging } from "./utils/logging.mjs";
 import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
 import { getDaysSince } from "./utils/date.mjs";
 
-const SPURGEON_PODCAST_ID = "3K7ozH48m7PKoRTkJ4Cdc0";
-const INSTRUMENTAL_PLAYLIST_ID = "5mgpMDPflYQRXU7XgYsRMe";
-const SYNESTHESIA_ALBUM_ID = "4D7S7xyJToJ28MVcSH3YFo";
-const DAILY_STRENGTH_PODCAST_ID = "3xcd7ws8kprhSCVBDTKb3W";
-
-const DAILY_COMMUTE_MORNING_PLAYLIST_ID = "2izrV7kDCebemseu3qeo3x";
-
-const PLAYLIST_BIRTHDAY = new Date("5/8/2025");
-
 export default async (req: Request, context: Context) => {
   const getLogs = setupLogging();
-
-  // TODO: get input values from config instead
-
-  const iteration = getDaysSince(PLAYLIST_BIRTHDAY);
-  console.log(`Generating Playlist iteration: ${iteration}`);
   
   const accessToken = await getToken();
-
   if (!accessToken) {
     return new Response("Unable to Refresh Access Token", { status: 401 });
   }
 
-  // construct playlist
+  const playlistConfig = JSON.parse(await (await fetch('config/morning.json')).json()) as PlaylistConfig;
+
+  const iteration = getDaysSince(new Date(playlistConfig.creation_date));
+  console.log(`Generating Playlist iteration: ${iteration}`);
+
+  // TODO: get input values from config instead
   const playlistUris: string[] = [];
-  playlistUris.push(await getIterativeAlbumTrackUri(SYNESTHESIA_ALBUM_ID, iteration, accessToken));
-  playlistUris.push(await getLatestPodcastEpisodeUri(SPURGEON_PODCAST_ID, accessToken));
-  playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
-  playlistUris.push(await getLatestPodcastEpisodeUri(DAILY_STRENGTH_PODCAST_ID, accessToken));
-  playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
+  for (let i = 0; i < playlistConfig.tracks.length; i++) {
+    playlistUris.push(await getTrackUri(playlistConfig.tracks[i], accessToken, iteration));
+  }
   
   // modify playlist by ID to replace with the above playlist
-  const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${DAILY_COMMUTE_MORNING_PLAYLIST_ID}/tracks`, {
+  const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistConfig.playlist_id}/tracks`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -74,4 +62,30 @@ async function getToken(): Promise<string | undefined> {
   }
 
   return accessToken;
+}
+
+async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iteration: number): Promise<string> {
+  switch (trackConfig.source_type) {
+    case "album": {
+      if (trackConfig.mode !== "iterative") {
+        throw new Error("Unsupported mode");
+      }
+      return await getIterativeAlbumTrackUri(trackConfig.source_id, iteration, accessToken);
+    }
+    case "playlist": {
+      if (trackConfig.mode !== "random") {
+        throw new Error("Unsupported mode");
+      }
+      return await getRandomPlaylistTrackUri(trackConfig.source_id, accessToken);
+    }
+    case "podcast": {
+      if (trackConfig.mode !== "latest") {
+        throw new Error("Unsupported mode");
+      }
+      return await getLatestPodcastEpisodeUri(trackConfig.source_id, accessToken);
+    }
+    default: {
+      throw new Error("Unsupported source_type");
+    }
+  }
 }

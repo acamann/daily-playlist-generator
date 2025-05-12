@@ -1,29 +1,35 @@
 {
+    "name": "Daily Commute - Morning",
     "playlist_id": "2izrV7kDCebemseu3qeo3x",
     "creation_date": "5/8/2025",
     "tracks": [
         {
-            "type": "album",
+            "source_type": "album",
+            "source_description": "Synesthisia Without Words",
             "mode": "iterative",
             "source_id": "4D7S7xyJToJ28MVcSH3YFo"
         },
         {
-            "type": "podcast",
+            "source_type": "podcast",
+            "source_description": "Spurgeon Morning devotion",
             "mode": "latest",
             "source_id": "3K7ozH48m7PKoRTkJ4Cdc0"
         },
         {
-            "type": "playlist",
+            "source_type": "playlist",
+            "source_description": "Instrumental Mix",
             "mode": "random",
             "source_id": "5mgpMDPflYQRXU7XgYsRMe"
         },
         {
-            "type": "podcast",
+            "source_type": "podcast",
+            "source_description": "Daily Strength for Men",
             "mode": "latest",
             "source_id": "3xcd7ws8kprhSCVBDTKb3W"
         },
         {
-            "type": "playlist",
+            "source_type": "playlist",
+            "source_description": "Instrumental Mix",
             "mode": "random",
             "source_id": "5mgpMDPflYQRXU7XgYsRMe"
         }
