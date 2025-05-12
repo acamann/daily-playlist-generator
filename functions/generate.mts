@@ -6,6 +6,7 @@ import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, 
 const SPURGEON_PODCAST_ID = "3K7ozH48m7PKoRTkJ4Cdc0";
 const INSTRUMENTAL_PLAYLIST_ID = "5mgpMDPflYQRXU7XgYsRMe";
 const SYNESTHESIA_ALBUM_ID = "4D7S7xyJToJ28MVcSH3YFo";
+const DAILY_STRENGTH_PODCAST_ID = "3xcd7ws8kprhSCVBDTKb3W";
 
 const DAILY_COMMUTE_MORNING_PLAYLIST_ID = "2izrV7kDCebemseu3qeo3x";
 
@@ -28,6 +29,8 @@ export default async (req: Request, context: Context) => {
   playlistUris.push(await getIterativeAlbumTrackUri(SYNESTHESIA_ALBUM_ID, PLAYLIST_ITERATION, accessToken));
   playlistUris.push(await getLatestPodcastEpisodeUri(SPURGEON_PODCAST_ID, accessToken));
   playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
+  playlistUris.push(await getLatestPodcastEpisodeUri(DAILY_STRENGTH_PODCAST_ID, accessToken));
+  playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
   
   // modify playlist by ID to replace with the above playlist
   const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${DAILY_COMMUTE_MORNING_PLAYLIST_ID}/tracks`, {
@@ -40,7 +43,7 @@ export default async (req: Request, context: Context) => {
       uris: playlistUris
     })
   });
-
+  console.log(`Update Morning Playlist Response: ${updateMorningPlaylistResponse.status}`);
   return new Response(JSON.stringify(getLogs()));
 }
 
