@@ -14,7 +14,7 @@ export async function spotifyGetRequest<TResponse>(url: string, accessToken: str
 export async function getLatestPodcastEpisodeUri(podcastId: string, accessToken: string): Promise<string> {
   const episodes = await spotifyGetRequest<GetEpisodesResponse>(`https://api.spotify.com/v1/shows/${podcastId}/episodes?limit=1`, accessToken);
   const episodeUri = episodes.items[0].uri;
-  console.log(`Podcast ${podcastId} :: Latest :: Episode URI ${episodeUri}`);
+  console.log(`Fetching Podcast ${podcastId} :: Latest :: Episode URI ${episodeUri}`);
   return episodeUri;
 }
 
@@ -31,7 +31,7 @@ export async function getRandomPlaylistTrackUri(playlistId: string, accessToken:
     itemIndex = 0;
   }
   const trackUri = tracks.items[itemIndex].track.uri;
-  console.log(`Playlist ${playlistId} :: Playlist Length ${totalTracks} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
+  console.log(`Fetching Playlist ${playlistId} :: Playlist Length ${totalTracks} :: Random :: Track Index ${randomIndex} :: Track URI ${trackUri}`);
   return trackUri;
 }
 
@@ -48,7 +48,7 @@ export async function getIterativeAlbumTrackUri(albumId: string, iteration: numb
     itemIndex = 0;
   }
   const trackUri = tracks.items[itemIndex].uri;
-  console.log(`Album ${albumId} :: Album Length ${totalTracks} :: Iteration ${iteration} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
+  console.log(`Fetching Album ${albumId} :: Album Length ${totalTracks} :: Iteration ${iteration} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
   return trackUri;
 }
 

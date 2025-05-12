@@ -5,7 +5,9 @@ import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, 
 import { getDaysSince } from "./utils/date.mjs";
 import { readFileSync } from "fs";
 
-const playlistConfig = JSON.parse(readFileSync(require.resolve("./config/morning.json"), "utf-8")) as PlaylistConfig;
+const morningConfigPath = require.resolve("./config/morning.json");
+const morningConfigJson = readFileSync(morningConfigPath, "utf-8");
+const morningPlaylist = JSON.parse(morningConfigJson) as PlaylistConfig;
 
 export default async (req: Request, context: Context) => {
   const getLogs = setupLogging();
@@ -15,17 +17,17 @@ export default async (req: Request, context: Context) => {
     return new Response("Unable to Refresh Access Token", { status: 401 });
   }
 
-  const iteration = getDaysSince(new Date(playlistConfig.creation_date));
-  console.log(`Generating Playlist iteration: ${iteration}`);
+  const iteration = getDaysSince(new Date(morningPlaylist.creation_date));
+  console.log(`Generating Playlist ${morningPlaylist.name} :: Daily Iteration ${iteration}`);
 
-  // TODO: get input values from config instead
   const playlistUris: string[] = [];
-  for (let i = 0; i < playlistConfig.tracks.length; i++) {
-    playlistUris.push(await getTrackUri(playlistConfig.tracks[i], accessToken, iteration));
+  for (let i = 0; i < morningPlaylist.tracks.length; i++) {
+    playlistUris.push(await getTrackUri(morningPlaylist.tracks[i], accessToken, iteration));
   }
   
   // modify playlist by ID to replace with the above playlist
-  const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistConfig.playlist_id}/tracks`, {
+  console.log(`Updating Playlist ${morningPlaylist.name} :: Id ${morningPlaylist.id}`);
+  const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${morningPlaylist.id}/tracks`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -35,7 +37,7 @@ export default async (req: Request, context: Context) => {
       uris: playlistUris
     })
   });
-  console.log(`Update Morning Playlist Response: ${updateMorningPlaylistResponse.status}`);
+  console.log(`Update Playlist Response: ${updateMorningPlaylistResponse.status}`);
   return new Response(JSON.stringify(getLogs()));
 }
 

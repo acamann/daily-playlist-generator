@@ -1,5 +1,6 @@
 type PlaylistConfig = {
-    playlist_id: string;
+    id: string;
+    name: string;
     creation_date: string;
     tracks: TrackConfig[];
 }
