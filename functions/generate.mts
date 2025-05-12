@@ -3,6 +3,9 @@ import type { Context } from "@netlify/functions";
 import { setupLogging } from "./utils/logging.mjs";
 import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
 import { getDaysSince } from "./utils/date.mjs";
+import { readFileSync } from "fs";
+
+const playlistConfig = JSON.parse(readFileSync("./config/morning.json", "utf-8")) as PlaylistConfig;
 
 export default async (req: Request, context: Context) => {
   const getLogs = setupLogging();
@@ -11,8 +14,6 @@ export default async (req: Request, context: Context) => {
   if (!accessToken) {
     return new Response("Unable to Refresh Access Token", { status: 401 });
   }
-
-  const playlistConfig = JSON.parse(await (await fetch('/config/morning.json')).json()) as PlaylistConfig;
 
   const iteration = getDaysSince(new Date(playlistConfig.creation_date));
   console.log(`Generating Playlist iteration: ${iteration}`);
