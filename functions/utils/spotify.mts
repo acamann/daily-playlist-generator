@@ -27,6 +27,15 @@ export async function getRandomPlaylistTrackUri(playlistId: string, accessToken:
   return trackUri;
 }
 
+export async function getIterativePlaylistTrackUri(playlistId: string, iteration: number, accessToken: string): Promise<string> {
+  const trackCount = await spotifyGetRequest<GetPlaylistTracksResponse>(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=1&fields=total`, accessToken);
+  const iterativeIndex = iteration % trackCount.total;
+  const tracks = await spotifyGetRequest<GetPlaylistTracksResponse>(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=1&offset=${iterativeIndex}&fields=items(track(uri))`, accessToken);
+  const trackUri = tracks.items[0].track.uri;
+  console.log(`Fetching Playlist ${playlistId} :: Playlist Length ${trackCount.total} :: Iteration ${iteration} :: Track Index ${iterativeIndex} :: Track URI ${trackUri}`);
+  return trackUri;
+}
+
 export async function getIterativeAlbumTrackUri(albumId: string, iteration: number, accessToken: string): Promise<string> {
   let tracks = await spotifyGetRequest<GetAlbumTracksResponse>(`https://api.spotify.com/v1/albums/${albumId}/tracks?limit=50`, accessToken);
   const totalTracks = tracks.total;

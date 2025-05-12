@@ -4,34 +4,34 @@
     "creation_date": "5/8/2025",
     "tracks": [
         {
-            "source_type": "album",
-            "source_description": "Synesthisia Without Words",
-            "mode": "iterative",
-            "source_id": "4D7S7xyJToJ28MVcSH3YFo"
+            "source_type": "playlist_iterative_track",
+            "source_description": "Morning Commute Playlist - Instrumental",
+            "source_id": "3Xsz3AUTNYYmMYXbDrWfg3"
         },
         {
-            "source_type": "podcast",
+            "source_type": "podcast_latest_episode",
             "source_description": "Spurgeon Morning devotion",
-            "mode": "latest",
             "source_id": "3K7ozH48m7PKoRTkJ4Cdc0"
         },
         {
-            "source_type": "playlist",
+            "source_type": "playlist_random_track",
             "source_description": "Instrumental Mix",
-            "mode": "random",
             "source_id": "5mgpMDPflYQRXU7XgYsRMe"
         },
         {
-            "source_type": "podcast",
+            "source_type": "podcast_latest_episode",
             "source_description": "Daily Strength for Men",
-            "mode": "latest",
             "source_id": "3xcd7ws8kprhSCVBDTKb3W"
         },
         {
-            "source_type": "playlist",
-            "source_description": "Instrumental Mix",
-            "mode": "random",
-            "source_id": "5mgpMDPflYQRXU7XgYsRMe"
+            "source_type": "playlist_iterative_track",
+            "source_description": "Morning Commute Playlist - Lyrics",
+            "source_id": "21tBa3fGxQ1OmAbt8U5ZB1"
+        },
+        {
+            "source_type": "playlist_random_track",
+            "source_description": "Christian Music that doesn't sound like 2008 k-live",
+            "source_id": "69UUyBWBSXyqdTQ1UXlJCp"
         }
     ]
 }

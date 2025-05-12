@@ -6,7 +6,6 @@ type PlaylistConfig = {
 }
 
 type TrackConfig = {
-    mode: "iterative" | "random" | "latest";
-    source_type: "album" | "playlist" | "podcast";
+    source_type: "album_iterative_track" | "playlist_random_track" | "podcast_latest_episode" | "playlist_iterative_track";
     source_id: string;
 }

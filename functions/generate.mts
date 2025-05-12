@@ -1,7 +1,7 @@
 import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
 import { setupLogging } from "./utils/logging.mjs";
-import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
+import { getAccessToken, getIterativeAlbumTrackUri, getIterativePlaylistTrackUri, getLatestPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
 import { getDaysSince } from "./utils/date.mjs";
 import { readFileSync } from "fs";
 
@@ -69,22 +69,16 @@ async function getToken(): Promise<string | undefined> {
 
 async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iteration: number): Promise<string> {
   switch (trackConfig.source_type) {
-    case "album": {
-      if (trackConfig.mode !== "iterative") {
-        throw new Error("Unsupported mode");
-      }
+    case "album_iterative_track": {
       return await getIterativeAlbumTrackUri(trackConfig.source_id, iteration, accessToken);
     }
-    case "playlist": {
-      if (trackConfig.mode !== "random") {
-        throw new Error("Unsupported mode");
-      }
+    case "playlist_random_track": {
       return await getRandomPlaylistTrackUri(trackConfig.source_id, accessToken);
     }
-    case "podcast": {
-      if (trackConfig.mode !== "latest") {
-        throw new Error("Unsupported mode");
-      }
+    case "playlist_iterative_track": {
+      return await getIterativePlaylistTrackUri(trackConfig.source_id, iteration, accessToken);
+    }
+    case "podcast_latest_episode": {
       return await getLatestPodcastEpisodeUri(trackConfig.source_id, accessToken);
     }
     default: {
