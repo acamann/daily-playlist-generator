@@ -4,7 +4,7 @@ function setupLogging() {
   const originalConsoleLog = console.log;
 
   console.log = function(message) {
-    logMessages.push(`${new Date()}: ${message}`);
+    logMessages.push(`${new Date().toISOString()}: ${message}`);
     originalConsoleLog(message);
   };
 }
