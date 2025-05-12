@@ -1,15 +1,11 @@
-let logMessages: string[] = [];
-
-function setupLogging() {
+export function setupLogging() {
+  const logMessages: string[] = [];
   const originalConsoleLog = console.log;
-  logMessages = [];
 
   console.log = function(message) {
     logMessages.push(`${new Date().toISOString()}: ${message}`);
     originalConsoleLog(message);
   };
+
+  return () => logMessages;
 }
-
-setupLogging();
-
-export const getLogs = () => logMessages;

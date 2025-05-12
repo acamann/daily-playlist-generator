@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
-import { getLogs } from "./utils/logging.mjs";
+import { setupLogging } from "./utils/logging.mjs";
 import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
 
 const SPURGEON_PODCAST_ID = "3K7ozH48m7PKoRTkJ4Cdc0";
@@ -18,6 +18,8 @@ const PLAYLIST_BIRTHDAY = new Date(2025, 4, 8).getTime(); // 5/8/25
 const PLAYLIST_ITERATION = Math.round(Math.abs((TODAY - PLAYLIST_BIRTHDAY) / ONE_DAY));
 
 export default async (req: Request, context: Context) => {
+  const getLogs = setupLogging();
+  
   const accessToken = await getToken();
 
   if (!accessToken) {
