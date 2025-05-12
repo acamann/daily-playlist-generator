@@ -1,0 +1,31 @@
+{
+    "playlist_id": "2izrV7kDCebemseu3qeo3x",
+    "creation_date": "5/8/2025",
+    "tracks": [
+        {
+            "type": "album",
+            "mode": "iterative",
+            "source_id": "4D7S7xyJToJ28MVcSH3YFo"
+        },
+        {
+            "type": "podcast",
+            "mode": "latest",
+            "source_id": "3K7ozH48m7PKoRTkJ4Cdc0"
+        },
+        {
+            "type": "playlist",
+            "mode": "random",
+            "source_id": "5mgpMDPflYQRXU7XgYsRMe"
+        },
+        {
+            "type": "podcast",
+            "mode": "latest",
+            "source_id": "3xcd7ws8kprhSCVBDTKb3W"
+        },
+        {
+            "type": "playlist",
+            "mode": "random",
+            "source_id": "5mgpMDPflYQRXU7XgYsRMe"
+        }
+    ]
+}

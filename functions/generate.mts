@@ -2,6 +2,7 @@ import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
 import { setupLogging } from "./utils/logging.mjs";
 import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
+import { getDaysSince } from "./utils/date.mjs";
 
 const SPURGEON_PODCAST_ID = "3K7ozH48m7PKoRTkJ4Cdc0";
 const INSTRUMENTAL_PLAYLIST_ID = "5mgpMDPflYQRXU7XgYsRMe";
@@ -10,15 +11,15 @@ const DAILY_STRENGTH_PODCAST_ID = "3xcd7ws8kprhSCVBDTKb3W";
 
 const DAILY_COMMUTE_MORNING_PLAYLIST_ID = "2izrV7kDCebemseu3qeo3x";
 
-const ONE_DAY = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-const NOW = new Date();
-const TODAY = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()).getTime();
-const PLAYLIST_BIRTHDAY = new Date(2025, 4, 8).getTime(); // 5/8/25
-
-const PLAYLIST_ITERATION = Math.round(Math.abs((TODAY - PLAYLIST_BIRTHDAY) / ONE_DAY));
+const PLAYLIST_BIRTHDAY = new Date("5/8/2025");
 
 export default async (req: Request, context: Context) => {
   const getLogs = setupLogging();
+
+  // TODO: get input values from config instead
+
+  const iteration = getDaysSince(PLAYLIST_BIRTHDAY);
+  console.log(`Generating Playlist iteration: ${iteration}`);
   
   const accessToken = await getToken();
 
@@ -28,7 +29,7 @@ export default async (req: Request, context: Context) => {
 
   // construct playlist
   const playlistUris: string[] = [];
-  playlistUris.push(await getIterativeAlbumTrackUri(SYNESTHESIA_ALBUM_ID, PLAYLIST_ITERATION, accessToken));
+  playlistUris.push(await getIterativeAlbumTrackUri(SYNESTHESIA_ALBUM_ID, iteration, accessToken));
   playlistUris.push(await getLatestPodcastEpisodeUri(SPURGEON_PODCAST_ID, accessToken));
   playlistUris.push(await getRandomPlaylistTrackUri(INSTRUMENTAL_PLAYLIST_ID, accessToken));
   playlistUris.push(await getLatestPodcastEpisodeUri(DAILY_STRENGTH_PODCAST_ID, accessToken));
