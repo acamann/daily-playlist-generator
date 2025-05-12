@@ -12,7 +12,7 @@ export default async (req: Request, context: Context) => {
     return new Response("Unable to Refresh Access Token", { status: 401 });
   }
 
-  const playlistConfig = JSON.parse(await (await fetch('config/morning.json')).json()) as PlaylistConfig;
+  const playlistConfig = JSON.parse(await (await fetch('/functions/config/morning.json')).json()) as PlaylistConfig;
 
   const iteration = getDaysSince(new Date(playlistConfig.creation_date));
   console.log(`Generating Playlist iteration: ${iteration}`);
