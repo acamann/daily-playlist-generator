@@ -5,7 +5,7 @@ import { getAccessToken, getIterativeAlbumTrackUri, getLatestPodcastEpisodeUri, 
 import { getDaysSince } from "./utils/date.mjs";
 import { readFileSync } from "fs";
 
-const playlistConfig = JSON.parse(readFileSync("./config/morning.json", "utf-8")) as PlaylistConfig;
+const playlistConfig = JSON.parse(readFileSync("/functions/config/morning.json", "utf-8")) as PlaylistConfig;
 
 export default async (req: Request, context: Context) => {
   const getLogs = setupLogging();
