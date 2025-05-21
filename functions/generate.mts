@@ -5,29 +5,38 @@ import { getAccessToken, getIterativeAlbumTrackUri, getIterativePlaylistTrackUri
 import { getDaysSince } from "./utils/date.mjs";
 import { readFileSync } from "fs";
 
-const morningConfigPath = require.resolve("./config/morning.json");
-const morningConfigJson = readFileSync(morningConfigPath, "utf-8");
-const morningPlaylist = JSON.parse(morningConfigJson) as PlaylistConfig;
+const DEFAULT_PLAYLIST = "morning";
 
 export default async (req: Request, context: Context) => {
   const getLogs = setupLogging();
+
+  const playlist = new URL(req.url).searchParams.get('playlist') ?? DEFAULT_PLAYLIST;
+  if (!["morning", "afternoon"].includes(playlist)) {
+    console.log(`Unknown playlist value in query: ${playlist}`);
+    return new Response("Unknown playlist", { status: 409 });
+  }
+  
+  // TODO: consider parsing all possible configs outside of the function to avoid on each request
+  const playlistConfigPath = require.resolve(`./config/${playlist}.json`);
+  const playlistConfigJson = readFileSync(playlistConfigPath, "utf-8");
+  const playlistConfig = JSON.parse(playlistConfigJson) as PlaylistConfig;
   
   const accessToken = await getToken();
   if (!accessToken) {
     return new Response("Unable to Refresh Access Token", { status: 401 });
   }
 
-  const iteration = getDaysSince(new Date(morningPlaylist.creation_date));
-  console.log(`Generating Playlist ${morningPlaylist.name} :: Daily Iteration ${iteration}`);
+  const iteration = getDaysSince(new Date(playlistConfig.creation_date));
+  console.log(`Generating Playlist ${playlistConfig.name} :: Daily Iteration ${iteration}`);
 
   const playlistUris: string[] = [];
-  for (let i = 0; i < morningPlaylist.tracks.length; i++) {
-    playlistUris.push(await getTrackUri(morningPlaylist.tracks[i], accessToken, iteration));
+  for (let i = 0; i < playlistConfig.tracks.length; i++) {
+    playlistUris.push(await getTrackUri(playlistConfig.tracks[i], accessToken, iteration));
   }
   
   // modify playlist by ID to replace with the above playlist
-  console.log(`Updating Playlist ${morningPlaylist.name} :: Id ${morningPlaylist.id}`);
-  const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${morningPlaylist.id}/tracks`, {
+  console.log(`Updating Playlist ${playlistConfig.name} :: Id ${playlistConfig.id}`);
+  const updateMorningPlaylistResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistConfig.id}/tracks`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${accessToken}`,
