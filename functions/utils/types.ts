@@ -14,6 +14,7 @@ export type GetEpisodesResponse = {
 
 type Episode = {
   uri: string;
+  release_date: string;
   resume_point: {
     fully_played: boolean;
     resume_position_ms: number

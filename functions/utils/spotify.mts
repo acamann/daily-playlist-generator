@@ -1,3 +1,4 @@
+import { isToday } from "./date.mjs";
 import { GetAlbumTracksResponse, GetEpisodesResponse, GetPlaylistTracksResponse, GetTokenResponse } from "./types";
 
 export async function spotifyGetRequest<TResponse>(url: string, accessToken: string): Promise<TResponse> {
@@ -28,6 +29,17 @@ export async function getLatestUnplayedPodcastEpisodeUri(podcastId: string, acce
     }
   }
   console.log(`Fetching Podcast ${podcastId} :: Latest Unplayed :: Limit ${limit} :: All of the latest ${limit} episodes have been played`);
+  return null;
+}
+
+export async function getTodaysPodcastEpisodeUri(podcastId: string, accessToken: string): Promise<string | null> {
+  const episodes = await spotifyGetRequest<GetEpisodesResponse>(`https://api.spotify.com/v1/shows/${podcastId}/episodes?limit=1`, accessToken);
+  if (isToday(episodes.items[0].release_date)) {
+    const episodeUri = episodes.items[0].uri;
+    console.log(`Fetching Podcast ${podcastId} :: Today's Episode :: Episode URI ${episodeUri}`);
+    return episodeUri;
+  }
+  console.log(`Fetching Podcast ${podcastId} :: Today's Episode :: No episode today. Latest Episode Date ${episodes.items[0].release_date}`);
   return null;
 }
 

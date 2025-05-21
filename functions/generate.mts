@@ -1,7 +1,7 @@
 import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
 import { setupLogging } from "./utils/logging.mjs";
-import { getAccessToken, getIterativeAlbumTrackUri, getIterativePlaylistTrackUri, getLatestPodcastEpisodeUri, getLatestUnplayedPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
+import { getAccessToken, getIterativeAlbumTrackUri, getIterativePlaylistTrackUri, getLatestPodcastEpisodeUri, getLatestUnplayedPodcastEpisodeUri, getRandomPlaylistTrackUri, getTodaysPodcastEpisodeUri } from "./utils/spotify.mjs";
 import { getDaysSince } from "./utils/date.mjs";
 import { readFileSync } from "fs";
 
@@ -80,7 +80,8 @@ async function getToken(): Promise<string | undefined> {
 }
 
 async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iteration: number): Promise<string | null> {
-  if (trackConfig.frequency && iteration % trackConfig.frequency !== 0) {
+  if (trackConfig.day_of_week && new Date().getDay() !== trackConfig.day_of_week) {
+    // if day of the week is configured, only include the track if today is that day
     return null;
   }
   switch (trackConfig.source_type) {
@@ -98,6 +99,9 @@ async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iterat
     }
     case "podcast_latest_unplayed": {
       return await getLatestUnplayedPodcastEpisodeUri(trackConfig.source_id, accessToken, 1);
+    }
+    case "podcast_todays_episode": {
+      return await getTodaysPodcastEpisodeUri(trackConfig.source_id, accessToken);
     }
     default: {
       console.log(`Unsupported source_type: ${trackConfig.source_type}`);
