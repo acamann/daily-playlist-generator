@@ -21,7 +21,14 @@
         {
             "source_type": "podcast_latest_episode",
             "source_description": "Daily Strength for Men",
-            "source_id": "3xcd7ws8kprhSCVBDTKb3W"
+            "source_id": "3xcd7ws8kprhSCVBDTKb3W",
+            "days_of_week": [0,2,4,6,7]
+        },
+        {
+            "source_type": "podcast_todays_episode",
+            "source_description": "Start with 7",
+            "source_id": "4QiBK9cuzsIPfuxg0sav3l",
+            "days_of_week": [1,3,5]
         },
         {
             "source_type": "playlist_iterative_track",

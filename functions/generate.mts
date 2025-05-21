@@ -80,7 +80,7 @@ async function getToken(): Promise<string | undefined> {
 }
 
 async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iteration: number): Promise<string | null> {
-  if (trackConfig.day_of_week && new Date().getDay() !== trackConfig.day_of_week) {
+  if (trackConfig.days_of_week && !trackConfig.days_of_week.has(new Date().getDay() as DayOfWeek)) {
     // if day of the week is configured, only include the track if today is that day
     return null;
   }

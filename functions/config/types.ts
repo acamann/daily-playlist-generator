@@ -14,5 +14,8 @@ type TrackConfig = {
         "podcast_latest_unplayed" |
         "podcast_todays_episode";
     source_id: string;
-    day_of_week?: 1 | 2 | 3 | 4 | 5;
+    days_of_week?: Set<DayOfWeek>;
 }
+
+// 0 = Sunday
+type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
