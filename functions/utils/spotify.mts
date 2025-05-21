@@ -18,6 +18,20 @@ export async function getLatestPodcastEpisodeUri(podcastId: string, accessToken:
   return episodeUri;
 }
 
+export async function getLatestUnplayedPodcastEpisodeUri(podcastId: string, accessToken: string): Promise<string | null> {
+  const limit = 10;
+  const episodes = await spotifyGetRequest<GetEpisodesResponse>(`https://api.spotify.com/v1/shows/${podcastId}/episodes?limit=${limit}`, accessToken);
+  for (let i = 0; i < episodes.items.length; i++) {
+    if (!episodes.items[i].resume_point.fully_played && episodes.items[i].resume_point.resume_position_ms === 0) {
+      const episodeUri = episodes.items[i].uri;
+      console.log(`Fetching Podcast ${podcastId} :: Latest Unplayed :: Episode URI ${episodeUri}`);
+      return episodeUri;
+    }
+  }
+  console.log(`Fetching Podcast ${podcastId} :: Latest Unplayed :: All of the latest ${limit} episodes have been played`);
+  return null;
+}
+
 export async function getRandomPlaylistTrackUri(playlistId: string, accessToken: string): Promise<string> {
   const trackCount = await spotifyGetRequest<GetPlaylistTracksResponse>(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=1&fields=total`, accessToken);
   const randomIndex = Math.floor(Math.random() * trackCount.total);

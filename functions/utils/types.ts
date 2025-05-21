@@ -9,7 +9,15 @@ export type GetPlaylistTracksResponse = {
 }
 
 export type GetEpisodesResponse = {
-  items: { uri: string }[];
+  items: Episode[];
+}
+
+type Episode = {
+  uri: string;
+  resume_point: {
+    fully_played: boolean;
+    resume_position_ms: number
+  }
 }
 
 export type GetTokenResponse = {

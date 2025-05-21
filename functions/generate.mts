@@ -1,7 +1,7 @@
 import { getStore } from "@netlify/blobs";
 import type { Context } from "@netlify/functions";
 import { setupLogging } from "./utils/logging.mjs";
-import { getAccessToken, getIterativeAlbumTrackUri, getIterativePlaylistTrackUri, getLatestPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
+import { getAccessToken, getIterativeAlbumTrackUri, getIterativePlaylistTrackUri, getLatestPodcastEpisodeUri, getLatestUnplayedPodcastEpisodeUri, getRandomPlaylistTrackUri } from "./utils/spotify.mjs";
 import { getDaysSince } from "./utils/date.mjs";
 import { readFileSync } from "fs";
 
@@ -31,7 +31,10 @@ export default async (req: Request, context: Context) => {
 
   const playlistUris: string[] = [];
   for (let i = 0; i < playlistConfig.tracks.length; i++) {
-    playlistUris.push(await getTrackUri(playlistConfig.tracks[i], accessToken, iteration));
+    const trackUri = await getTrackUri(playlistConfig.tracks[i], accessToken, iteration);
+    if (trackUri) {
+      playlistUris.push(trackUri);
+    }
   }
   
   // modify playlist by ID to replace with the above playlist
@@ -76,7 +79,10 @@ async function getToken(): Promise<string | undefined> {
   return accessToken;
 }
 
-async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iteration: number): Promise<string> {
+async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iteration: number): Promise<string | null> {
+  if (trackConfig.frequency && iteration % trackConfig.frequency !== 0) {
+    return null;
+  }
   switch (trackConfig.source_type) {
     case "album_iterative_track": {
       return await getIterativeAlbumTrackUri(trackConfig.source_id, iteration, accessToken);
@@ -90,8 +96,12 @@ async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iterat
     case "podcast_latest_episode": {
       return await getLatestPodcastEpisodeUri(trackConfig.source_id, accessToken);
     }
+    case "podcast_latest_unplayed": {
+      return await getLatestUnplayedPodcastEpisodeUri(trackConfig.source_id, accessToken);
+    }
     default: {
-      throw new Error("Unsupported source_type");
+      console.log(`Unsupported source_type: ${trackConfig.source_type}`);
+      return null;
     }
   }
 }
