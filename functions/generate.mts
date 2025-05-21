@@ -97,7 +97,7 @@ async function getTrackUri(trackConfig: TrackConfig, accessToken: string, iterat
       return await getLatestPodcastEpisodeUri(trackConfig.source_id, accessToken);
     }
     case "podcast_latest_unplayed": {
-      return await getLatestUnplayedPodcastEpisodeUri(trackConfig.source_id, accessToken);
+      return await getLatestUnplayedPodcastEpisodeUri(trackConfig.source_id, accessToken, 1);
     }
     default: {
       console.log(`Unsupported source_type: ${trackConfig.source_type}`);

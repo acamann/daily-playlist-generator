@@ -21,8 +21,7 @@
         {
             "source_type": "podcast_latest_unplayed",
             "source_description": "5-Minute Parenting Podcast",
-            "source_id": "0lFsvgVG7RQ0WFUJKAdkq7",
-            "frequency": 4
+            "source_id": "0lFsvgVG7RQ0WFUJKAdkq7"
         },
         {
             "source_type": "playlist_iterative_track",
